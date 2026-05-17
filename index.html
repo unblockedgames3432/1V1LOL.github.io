@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/gh/n-101-1/1@main/style.css">
+
+<script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/UnityProgress.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/2.7.js"></script>
+
+<script>
+let gameInstance = null;
+
+window.addEventListener("load", function () {
+
+    try {
+
+        gameInstance = UnityLoader.instantiate(
+            "gameContainer",
+            "https://cdn.jsdelivr.net/gh/n-101-1/1@main/2.7.json",
+            {
+                onProgress: UnityProgress,
+                Module: {
+                    onRuntimeInitialized: function () {
+                        console.log("Unity initialized");
+                        UnityProgress(gameInstance, "complete");
+                    }
+                }
+            }
+        );
+
+    } catch (e) {
+        console.error("Unity load error:", e);
+    }
+
+    // Wait for Firebase scripts
+    if (typeof initializeFireBase === "function") {
+        try {
+            initializeFireBase();
+            console.log("Firebase initialized");
+        } catch(e) {
+            console.error("Firebase error:", e);
+        }
+    } else {
+        console.warn("initializeFireBase() not found");
+    }
+
+});
+
+function showAds() {
+    console.log("showAds called");
+}
+
+function requestNewAd() {
+    console.log("Requesting ad...");
+
+    // Simulate ad completion
+    setTimeout(() => {
+        unityAdFinishedCallback();
+    }, 1000);
+}
+
+function unityAdFinishedCallback() {
+
+    if (!gameInstance) {
+        console.warn("Game instance missing");
+        return;
+    }
+
+    try {
+        gameInstance.SendMessage(
+            "AdsManager",
+            "OnWebCallback"
+        );
+    } catch (e) {
+        console.error(
+            "Unity callback failed:",
+            e
+        );
+    }
+}
+</script>
+</head>
+
+<body>
+
+<div class="webgl-content">
+    <div id="gameContainer"
+         style="width:100%;height:100vh;margin:auto;">
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firebase-app.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firebase-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firebase-firestore.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firebase.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1login.js?v=2"></script>
+<script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firestore.js"></script>
+
+</body>
+</html>
